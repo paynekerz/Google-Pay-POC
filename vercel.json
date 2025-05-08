@@ -1,0 +1,7 @@
+{
+    "rewrites": [
+      { "source": "/config", "destination": "/api/config" },
+      { "source": "/proxy/transactions", "destination": "/api/proxy" }
+    ]
+  }
+  

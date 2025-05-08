@@ -25,7 +25,7 @@
   <script>
     // Load config from your Express /config endpoint
     async function loadConfig() {
-      const res = await fetch('/config');
+      const res = await fetch('/api/config');
       if (!res.ok) throw new Error('Could not load config');
       return res.json();
     }
@@ -63,7 +63,7 @@
             console.log(settings);
 
             // 2) Send it to backend proxy (This portion is only present on the POC version see server for more accurate depiction)
-            const resp = await fetch('/proxy/transactions', {
+            const resp = await fetch('/api/proxy', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
