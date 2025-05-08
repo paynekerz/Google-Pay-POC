@@ -1,0 +1,7 @@
+{
+    "name": "Google Pay POC",
+    "short_name": "GPayPOC",
+    "start_url": "/",
+    "display": "standalone"
+  }
+  

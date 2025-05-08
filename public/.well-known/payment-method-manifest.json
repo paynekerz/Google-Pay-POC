@@ -1,0 +1,5 @@
+{
+    "default_applications": ["https://google-pay-poc-zo2v.vercel.app/web_manifest.json"],
+    "supported_origins": ["https://google-pay-poc-zo2v.vercel.app/"]
+}
+  
