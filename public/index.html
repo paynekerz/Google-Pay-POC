@@ -60,6 +60,7 @@
             // 1) Get the Google Pay token
             const paymentData = await paymentDataRequest;
             const token = paymentData.paymentMethodData.tokenizationData.token;
+            console.log('Google Pay token:', token);
             console.log('Settings Passed');
 
             // 2) Send it to backend proxy (This portion is only present on the POC version see server for more accurate depiction)

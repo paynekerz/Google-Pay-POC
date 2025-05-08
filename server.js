@@ -73,7 +73,6 @@ app.post("/proxy/transactions", async (req, res) => {
     return res.status(500).json({
       error: "Internal server error",
       details: err.message,
-      google_pay_token: rawTokenString
     });
   }
 });
