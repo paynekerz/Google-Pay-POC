@@ -1,0 +1,8 @@
+# Dependency directories
+node_modules/
+
+# Environment files
+.env
+
+# Certificates (if sensitive)
+cert/

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Pay POC</title>
+  <!-- Load the Basys WalletJS library -->
+  <script src="https://sandbox.basysiqpro.com/walletjs/walletjs.js"></script>
+  <script async
+          src="https://pay.google.com/gp/p/js/pay.js"
+          onload="initPaymentsClient()">
+  </script>
+  <script>
+    let paymentsClient;
+    function initPaymentsClient() {
+      paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+      console.log('✅ PaymentsClient initialized:', paymentsClient);
+    }
+  </script>
+</head>
+<body>
+  <h1>Google Pay Proof of Concept</h1>
+  <div id="container"></div>
+
+  <script>
+    // Load config from your Express /config endpoint
+    async function loadConfig() {
+      const res = await fetch('/config');
+      if (!res.ok) throw new Error('Could not load config');
+      return res.json();
+    }
+
+    window.onload = async () => {
+      let config;
+      try {
+        config = await loadConfig();
+        console.log('Loaded Config:', config);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+
+      // Build the WalletJS settings per the docs
+      const settings = {
+        container: '#container',
+        merchantName: 'Basys Processing',
+        merchantId: config.merchantId,
+        gatewayMerchantId: config.gatewayId,
+        allowedCardNetworks: ['VISA', 'MASTERCARD'],
+        allowedCardAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+        transactionInfo: {
+          countryCode: 'US',
+          currencyCode: 'USD',
+          totalPrice: '1.23',
+        },
+
+        // Fired when the user taps the GPay button:
+        onGooglePaymentButtonClicked: async (paymentDataRequest) => {
+          try {
+            // 1) Get the Google Pay token
+            const paymentData = await paymentDataRequest;
+            const token = paymentData.paymentMethodData.tokenizationData.token;
+            console.log(settings);
+
+            // 2) Send it to backend proxy (This portion is only present on the POC version see server for more accurate depiction)
+            const resp = await fetch('/proxy/transactions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                amount:  1.23,
+                currencyCode: 'USD',
+                paymentMethod: { method: 'GOOGLE_PAY', token }
+              })
+            });
+            const result = await resp.json();
+            console.log('Transaction Result:', result);
+
+            // 3) Notify the user
+            if (resp.ok) {
+              console.log('Payment Success! ', resp)
+              alert('Payment Success! ', resp);
+            } else {
+              console.log('Payment Failed! ', resp);
+              alert('Payment Failed! ', resp);
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error during payment ', err);
+          }
+        }
+      };
+
+      // Initialize the Google Pay button via WalletJS
+      new walletjs.GooglePay(settings);  // 
+    };
+  </script>
+</body>
+</html>
